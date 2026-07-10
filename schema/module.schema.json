@@ -1,0 +1,543 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://b8im.dev/schemas/module.schema.json",
+  "title": "B8IM Module Manifest",
+  "description": "Static delivery manifest for a B8IM module. Runtime system and tenant states are stored separately.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "module_key",
+    "name",
+    "version",
+    "description",
+    "category",
+    "module_type",
+    "is_builtin",
+    "license_required",
+    "min_system_version",
+    "depends_on",
+    "conflicts_with",
+    "platforms",
+    "permissions",
+    "menus",
+    "routes",
+    "config",
+    "migrations",
+    "capabilities",
+    "hooks"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "module_key": {
+      "$ref": "#/$defs/module_key"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "version": {
+      "$ref": "#/$defs/semantic_version"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "category": {
+      "type": "string",
+      "enum": ["core", "im", "rtc", "security", "wallet", "decoration", "governance", "operations", "integration"]
+    },
+    "module_type": {
+      "type": "string",
+      "enum": ["foundation", "business", "decoration", "governance"]
+    },
+    "is_builtin": {
+      "type": "boolean"
+    },
+    "license_required": {
+      "type": "boolean"
+    },
+    "min_system_version": {
+      "$ref": "#/$defs/semantic_version"
+    },
+    "depends_on": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/module_relation"
+      }
+    },
+    "conflicts_with": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/module_relation"
+      }
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/platform"
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/permission"
+      }
+    },
+    "menus": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/menu"
+      }
+    },
+    "routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    },
+    "config": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/config_item"
+      }
+    },
+    "migrations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/migration"
+      }
+    },
+    "capabilities": {
+      "$ref": "#/$defs/capabilities"
+    },
+    "hooks": {
+      "$ref": "#/$defs/hooks"
+    }
+  },
+  "$defs": {
+    "module_key": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "semantic_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "version_constraint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "server",
+        "admin",
+        "tenant",
+        "web",
+        "im",
+        "android",
+        "ios",
+        "desktop",
+        "harmonyos"
+      ]
+    },
+    "module_relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module_key", "constraint"],
+      "properties": {
+        "module_key": {
+          "$ref": "#/$defs/module_key"
+        },
+        "constraint": {
+          "$ref": "#/$defs/version_constraint"
+        }
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "name", "scope"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160,
+          "pattern": "^[a-z][a-z0-9_-]*(?::[a-z][a-z0-9_-]*)+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["system", "tenant"]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "menu": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "platform", "type", "sort"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9_.-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["admin", "tenant", "web"]
+        },
+        "type": {
+          "type": "string",
+          "enum": ["directory", "menu", "button"]
+        },
+        "parent": {
+          "type": ["string", "null"],
+          "maxLength": 100
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "permission": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "icon": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "sort": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "menu"}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["route"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "button"}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["permission"]
+          }
+        }
+      ]
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "platform", "path"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9_.-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "platform": {
+          "$ref": "#/$defs/platform"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "^/"
+        },
+        "methods": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+          }
+        },
+        "component": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "permission": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160,
+          "pattern": "^[a-z][a-z0-9_.-]*$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "platform": {"const": "server"}
+            },
+            "required": ["platform"]
+          },
+          "then": {
+            "required": ["methods"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "platform": {"enum": ["admin", "tenant", "web", "android", "ios", "desktop", "harmonyos"]}
+            },
+            "required": ["platform"]
+          },
+          "then": {
+            "required": ["component"]
+          }
+        }
+      ]
+    },
+    "config_option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "value"],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "value": {
+          "type": ["string", "integer", "number", "boolean"]
+        }
+      }
+    },
+    "config_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "name", "type", "scope", "required", "sensitive"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9_.-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string", "integer", "number", "boolean", "select", "multiselect", "json", "secret", "url"]
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["system", "tenant"]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "sensitive": {
+          "type": "boolean"
+        },
+        "default": true,
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/config_option"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {"enum": ["select", "multiselect"]}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["options"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {"const": "secret"}
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "sensitive": {"const": true}
+            }
+          }
+        }
+      ]
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "platform", "path", "description", "destructive"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+        },
+        "version": {
+          "$ref": "#/$defs/semantic_version"
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["server", "im"]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "connection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "destructive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "capability_list": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 160,
+        "pattern": "^[a-z][a-z0-9_.-]*$"
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "server": {"$ref": "#/$defs/capability_list"},
+        "admin": {"$ref": "#/$defs/capability_list"},
+        "tenant": {"$ref": "#/$defs/capability_list"},
+        "web": {"$ref": "#/$defs/capability_list"},
+        "im": {"$ref": "#/$defs/capability_list"},
+        "android": {"$ref": "#/$defs/capability_list"},
+        "ios": {"$ref": "#/$defs/capability_list"},
+        "desktop": {"$ref": "#/$defs/capability_list"},
+        "harmonyos": {"$ref": "#/$defs/capability_list"}
+      }
+    },
+    "hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handler", "scope", "transactional"],
+      "properties": {
+        "handler": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 300,
+          "pattern": "^[A-Za-z_][A-Za-z0-9_\\\\]*::[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["system", "tenant", "both"]
+        },
+        "transactional": {
+          "type": "boolean"
+        }
+      }
+    },
+    "hooks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["install", "upgrade", "enable", "disable", "uninstall"],
+      "properties": {
+        "install": {"$ref": "#/$defs/hook"},
+        "upgrade": {"$ref": "#/$defs/hook"},
+        "enable": {"$ref": "#/$defs/hook"},
+        "disable": {"$ref": "#/$defs/hook"},
+        "uninstall": {"$ref": "#/$defs/hook"}
+      }
+    },
+    "system_status": {
+      "description": "Runtime state stored by the system module registry, never in module.json.",
+      "type": "string",
+      "enum": ["DISCOVERED", "INSTALLED", "ENABLED", "DISABLED", "UPGRADING", "FAILED", "UNINSTALLED"]
+    },
+    "tenant_status": {
+      "description": "Runtime state derived from the tenant license and tenant enablement records, never in module.json.",
+      "type": "string",
+      "enum": ["UNAUTHORIZED", "AUTHORIZED", "ENABLED", "DISABLED", "EXPIRED"]
+    }
+  }
+}
