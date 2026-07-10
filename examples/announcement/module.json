@@ -324,6 +324,15 @@
       "methods": ["GET"],
       "permission": "saimulti:web:announcement:index",
       "capability": "announcement.web.read"
+    },
+    {
+      "id": "announcement.server.web-acknowledge",
+      "name": "用户端公告已读确认接口",
+      "platform": "server",
+      "path": "/saimulti/web/announcement/acknowledge",
+      "methods": ["POST"],
+      "permission": "saimulti:web:announcement:index",
+      "capability": "announcement.web.read"
     }
   ],
   "config": [
