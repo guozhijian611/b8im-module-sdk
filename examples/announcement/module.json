@@ -2,7 +2,7 @@
   "$schema": "../../schema/module.schema.json",
   "module_key": "announcement",
   "name": "公告",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "B8IM 平台公告和租户公告的内置基础能力。",
   "category": "operations",
   "module_type": "foundation",
@@ -15,7 +15,9 @@
     "server",
     "admin",
     "tenant",
-    "web"
+    "web",
+    "android",
+    "ios"
   ],
   "permissions": [
     {
@@ -83,6 +85,12 @@
       "name": "用户端查看公告",
       "scope": "tenant",
       "description": "在当前 organization 的用户端查看有效公告。"
+    },
+    {
+      "slug": "saimulti:app:announcement:index",
+      "name": "App 查看公告",
+      "scope": "tenant",
+      "description": "在当前 organization 的 Android/iOS App 查看并确认公告。"
     }
   ],
   "menus": [
@@ -190,6 +198,28 @@
       "permission": "saimulti:web:announcement:index",
       "icon": "ri:notification-3-line",
       "sort": 200
+    },
+    {
+      "id": "announcement.android",
+      "name": "公告",
+      "platform": "android",
+      "type": "menu",
+      "parent": null,
+      "route": "/announcements",
+      "permission": "saimulti:app:announcement:index",
+      "icon": "ri:notification-3-line",
+      "sort": 200
+    },
+    {
+      "id": "announcement.ios",
+      "name": "公告",
+      "platform": "ios",
+      "type": "menu",
+      "parent": null,
+      "route": "/announcements",
+      "permission": "saimulti:app:announcement:index",
+      "icon": "ri:notification-3-line",
+      "sort": 200
     }
   ],
   "routes": [
@@ -216,6 +246,24 @@
       "path": "/announcements",
       "component": "@/views/announcement/index.vue",
       "permission": "saimulti:web:announcement:index"
+    },
+    {
+      "id": "announcement.android.page",
+      "name": "Android 公告页面",
+      "platform": "android",
+      "path": "/announcements",
+      "component": "package:b8im_app_flutter/src/modules/announcement/announcement_module.dart",
+      "permission": "saimulti:app:announcement:index",
+      "capability": "announcement.app.page"
+    },
+    {
+      "id": "announcement.ios.page",
+      "name": "iOS 公告页面",
+      "platform": "ios",
+      "path": "/announcements",
+      "component": "package:b8im_app_flutter/src/modules/announcement/announcement_module.dart",
+      "permission": "saimulti:app:announcement:index",
+      "capability": "announcement.app.page"
     },
     {
       "id": "announcement.server.admin-list",
@@ -333,6 +381,33 @@
       "methods": ["POST"],
       "permission": "saimulti:web:announcement:index",
       "capability": "announcement.web.read"
+    },
+    {
+      "id": "announcement.server.app-list",
+      "name": "App 有效公告接口",
+      "platform": "server",
+      "path": "/saimulti/app/announcement/index",
+      "methods": ["GET"],
+      "permission": "saimulti:app:announcement:index",
+      "capability": "announcement.app.read"
+    },
+    {
+      "id": "announcement.server.app-read",
+      "name": "App 公告详情接口",
+      "platform": "server",
+      "path": "/saimulti/app/announcement/read",
+      "methods": ["GET"],
+      "permission": "saimulti:app:announcement:index",
+      "capability": "announcement.app.read"
+    },
+    {
+      "id": "announcement.server.app-acknowledge",
+      "name": "App 公告已读确认接口",
+      "platform": "server",
+      "path": "/saimulti/app/announcement/acknowledge",
+      "methods": ["POST"],
+      "permission": "saimulti:app:announcement:index",
+      "capability": "announcement.app.read"
     }
   ],
   "config": [
@@ -377,11 +452,14 @@
     "server": [
       "announcement.admin.manage",
       "announcement.tenant.manage",
-      "announcement.web.read"
+      "announcement.web.read",
+      "announcement.app.read"
     ],
     "admin": ["announcement.admin.page"],
     "tenant": ["announcement.tenant.page"],
-    "web": ["announcement.web.page", "announcement.web.popup"]
+    "web": ["announcement.web.page", "announcement.web.popup"],
+    "android": ["announcement.app.page"],
+    "ios": ["announcement.app.page"]
   },
   "hooks": {
     "install": {

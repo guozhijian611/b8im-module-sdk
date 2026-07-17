@@ -215,7 +215,7 @@
         },
         "platform": {
           "type": "string",
-          "enum": ["admin", "tenant", "web"]
+          "enum": ["admin", "tenant", "web", "android", "ios", "desktop", "harmonyos"]
         },
         "type": {
           "type": "string",
