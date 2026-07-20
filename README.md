@@ -13,7 +13,17 @@ composer test
 composer lint
 ```
 
-SDK 作为本地 path 包接入时，在主工程的 `composer.json` 中声明 `../b8im-module-sdk`，开发期可使用 symlink，发布时必须改用明确版本的 private Composer package 或 release tag。
+## v0.2.0 发布约定
+
+当前契约尚未发布为 `v0.2.0`。本次发布准备合并到 `main` 后，维护者必须从合并后的 `main` commit 创建 annotated `v0.2.0` tag；tag 一经发布即不可移动、覆盖或删除后重建。不得从发布准备分支提前打 tag，也不得在 tag 实际发布前宣称 `v0.2.0` 已发布。
+
+`v0.2.0` tag 发布后，正式环境和正式交付包必须使用版本化依赖：
+
+```bash
+composer require b8im/module-sdk:^0.2.0
+```
+
+SDK 作为本地 path 包接入时，可在 dev workspace 的主工程 `composer.json` 中声明 `../b8im-module-sdk` 并使用 symlink。该方式只用于 workspace 本地开发，不得作为正式发布、部署或交付依赖。
 
 ## module.json
 
